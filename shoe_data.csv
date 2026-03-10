@@ -1,0 +1,38 @@
+brand,name,price,shock_absorption,width,toebox_width,toebox_height,size,arch_support,pace
+Adidas,Adizero Evo SL,159,147,97.5,71.6,28.1,TTS,Neutral,Daily|Tempo
+Adidas,Supernova Rise 3,160,140,97.6,74.5,29.0,TTS,Neutral,Daily
+Adidas,Adizero Adios Pro 4,259,142,93.2,69.5,28.3,Small,Neutral,Race
+Adidas,Supernova Solution 2,150,127,97.1,77.1,26.6,TTS,Stability,Daily
+Asics,Gel Nimbus 28,200,137,97.6,72.5,22.7,TTS,Neutral,Daily
+Asics,Gel Kayano 32,200,133,96.6,73.9,27.5,TTS,Stability,Daily
+Asics,Magic Speed 5,189,149,95.1,71.9,25.7,TTS,Neutral,Tempo|Race
+Asics,Novablast 5,150,141,97.5,74.4,27.2,TTS,Neutral,Daily|Tempo
+Asics,GT-2000 14,160,132,94.5,68.4,24.9,TTS,Stability,Daily
+Asics,Superblast 2,220,130,94.7,72.3,27.7,TTS,Neutral,Tempo|Daily
+Asics,Metaspeed Sky Tokyo,280,147,90.5,70.1,30.6,TTS,Neutral,Race
+Brooks,Ghost 17,179,140,95.2,69.6,24.8,TTS,Neutral,Daily
+Brooks,Glycerin 22,199,133,96.3,73.7,23.6,Small,Neutral,Daily
+Brooks,Adrenaline GTS 24,179,121,95.1,73.7,25.4,Small,Stability,Daily
+Brooks,Hyperion 3,179,130,96.3,72.1,24.7,TTS,Neutral,Daily|Tempo
+Brooks,Hyperion Elite 5,325,151,92.7,71.5,24.1,TTS,Neutral,Race
+Hoka,Bondi 9,179,146,94.1,72.5,29.6,TTS,Neutral,Daily
+Hoka,Clifton 10,159,,,,, TTS,Neutral,Daily
+Hoka,Arahi 8,,,,,,TTS,Stability,Daily
+Hoka,Mach X 3,,,,,,TTS,Neutral,Tempo|Race
+Hoka,Rocket X3,,,,,,TTS,Neutral,Race
+New Balance,Fresh Foam X More v6,,,,,,TTS,Neutral,Daily
+New Balance,Fresh Foam X 1080 v15,209,,,,, TTS,Neutral,Daily
+New Balance,FuelCell Rebel v5,,,,,,TTS,Neutral,Tempo|Daily
+New Balance,FuelCell SuperComp Elite v5,,,,,,TTS,Neutral,Race
+Nike,Vomero Plus,,,,,,TTS,Neutral,Daily
+Nike,Vomero 18,,,,,,TTS,Neutral,Daily
+Nike,Vaporfly 4,,,,,,TTS,Neutral,Race
+Nike,Pegasus 41,139,,,,, TTS,Neutral,Daily
+Nike,Zoom Fly 6,169,,,,, TTS,Neutral,Tempo|Daily
+Nike,Structure 26,,,,,,TTS,Stability,Daily
+Nike,Alphafly 3,,,,,,TTS,Neutral,Race
+Saucony,Endorphin Speed 5,,,,,,TTS,Neutral,Tempo|Race
+Saucony,Ride 19,,,,,,TTS,Neutral,Daily
+Saucony,Triumph 23,,,,,,TTS,Neutral,Daily
+Saucony,Tempus 2,,,,,,TTS,Stability,Daily
+Saucony,Endorphin Elite 2,,,,,,TTS,Neutral,Race
