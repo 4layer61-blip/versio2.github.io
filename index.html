@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#060606">
+<title>FootFit</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060606;--s1:#101010;--s2:#181818;--s3:#222;
+  --bd:#2c2c2c;--bd2:#383838;
+  --tx:#eeeee8;--t2:#aaa;--t3:#666;--t4:#3a3a3a;
+  --lime:#c9f03e;--lbg:rgba(201,240,62,.09);--lbd:rgba(201,240,62,.25);
+  --amber:#f59e0b;--green:#34d399;--blue:#60a5fa;--red:#f87171;
+  --r:15px;--rs:9px;
+  --ff:'Manrope',sans-serif;--fd:'Barlow Condensed',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--tx);font-family:var(--ff);font-size:16px;line-height:1.5;min-height:100dvh;overflow-x:hidden}
+#app{max-width:480px;margin:0 auto;min-height:100dvh;position:relative}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(30px);transition:opacity .28s ease,transform .28s ease;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
+.screen.on{opacity:1;pointer-events:all;transform:none;position:relative}
+.screen.out{opacity:0;transform:translateX(-30px)}
+
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);font-weight:700;margin-bottom:7px}
+.bigtitle{font-family:var(--fd);font-size:52px;font-weight:800;line-height:.95;letter-spacing:.5px;margin-bottom:8px}
+
+.btn{background:var(--lime);color:var(--bg);border:none;border-radius:var(--r);padding:17px 20px;font-family:var(--ff);font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:transform .13s;letter-spacing:.01em}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.3;pointer-events:none}
+.btn-ghost{background:transparent;color:var(--t3);border:1px solid var(--bd2);border-radius:var(--r);padding:14px 20px;font-family:var(--ff);font-size:13px;cursor:pointer;width:100%;transition:background .14s}
+.btn-ghost:active{background:var(--s2)}
+.btn-icon{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:15px;cursor:pointer;color:var(--t2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--s1);border:1px solid var(--bd2);border-radius:100px;padding:4px 11px;font-size:11px;color:var(--t2)}
+.pill.hi{background:var(--lbg);border-color:var(--lbd);color:var(--lime)}
+.pill.blue{background:rgba(96,165,250,.08);border-color:rgba(96,165,250,.25);color:var(--blue)}
+
+/* FORM */
+.num-wrap{background:var(--s1);border:2px solid var(--bd2);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:8px;transition:border-color .2s;margin-bottom:10px}
+.num-wrap:focus-within{border-color:var(--lime)}
+.num-wrap input{flex:1;background:transparent;border:none;outline:none;font-family:var(--fd);font-size:52px;font-weight:700;color:var(--tx);min-width:0;letter-spacing:1px}
+.num-wrap input::placeholder{color:var(--t4)}
+.num-unit{font-size:18px;color:var(--t3)}
+.tip-box{background:var(--s1);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 14px;font-size:12px;color:var(--t2);line-height:1.65;display:flex;gap:9px;align-items:flex-start}
+.tip-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* OPTS */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{background:var(--s1);border:2px solid var(--bd);border-radius:var(--r);padding:14px 15px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .17s;user-select:none}
+.opt:active{transform:scale(.985)}
+.opt.on{border-color:var(--lime);background:var(--lbg)}
+.opt-ico{font-size:20px;flex-shrink:0;width:28px;text-align:center}
+.opt-txt{flex:1}
+.opt-lbl{font-size:14px;font-weight:600;line-height:1.2}
+.opt-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--bd2);flex-shrink:0;position:relative;transition:all .17s}
+.chk.sq{border-radius:6px}
+.opt.on .chk{background:var(--lime);border-color:var(--lime)}
+.opt.on .chk::after{content:'';position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:var(--bg);transform:translate(-50%,-50%)}
+.opt.on .chk.sq::after{width:9px;height:6px;border-radius:0;background:none;border-left:2.5px solid var(--bg);border-bottom:2.5px solid var(--bg);transform:translate(-50%,-65%) rotate(-45deg)}
+
+/* ARCH */
+.arch-row{display:flex;gap:8px}
+.arch-c{flex:1;background:var(--s1);border:2px solid var(--bd);border-radius:var(--r);padding:12px 6px 11px;cursor:pointer;text-align:center;transition:all .17s;user-select:none}
+.arch-c:active{transform:scale(.97)}
+.arch-c.on{border-color:var(--lime);background:var(--lbg)}
+.arch-svg{height:44px;display:flex;justify-content:center;align-items:flex-end;margin-bottom:7px}
+.arch-lbl{font-size:12px;font-weight:700}
+.arch-sub{font-size:10px;color:var(--t3);margin-top:2px}
+
+/* QUIZ */
+.q-head{padding:52px 22px 0;position:sticky;top:0;background:var(--bg);z-index:10}
+.prog{height:2px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:16px}
+.prog-fill{height:100%;background:var(--lime);border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.q-meta{font-size:10px;color:var(--t4);letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.q-err{font-size:12px;color:var(--amber);text-align:center;min-height:14px}
+
+/* ═══════════════════════════════════════
+   LANDING
+═══════════════════════════════════════ */
+#s-land{justify-content:flex-end}
+.land-inner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 26px 18px;position:relative}
+.land-glow{position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(201,240,62,.06) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-56%);pointer-events:none}
+.logo-mark{width:72px;height:72px;background:var(--lime);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;box-shadow:0 0 48px rgba(201,240,62,.22);z-index:1;position:relative}
+.land-title{font-family:var(--fd);font-size:68px;font-weight:800;line-height:.92;text-align:center;margin-bottom:11px;z-index:1;position:relative}
+.land-title b{color:var(--lime)}
+.land-sub{font-size:14px;color:var(--t2);text-align:center;max-width:280px;line-height:1.7;margin-bottom:22px}
+.db-status{display:flex;align-items:center;gap:7px;background:var(--s1);border:1px solid var(--bd2);border-radius:100px;padding:7px 14px;font-size:11px;color:var(--t2);margin-bottom:20px}
+.db-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.db-dot.ok{background:var(--lime);box-shadow:0 0 7px var(--lime)}
+.db-dot.err{background:var(--red)}
+.db-dot.loading{background:var(--amber);animation:pulse 1s ease-in-out infinite}
+.method-label{font-size:10px;color:var(--t4);letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:8px;text-align:center}
+.method-row{display:flex;gap:8px;width:100%;max-width:320px}
+.method-btn{flex:1;background:var(--s1);border:2px solid var(--bd);border-radius:14px;padding:14px 8px;cursor:pointer;text-align:center;transition:all .17s;display:flex;flex-direction:column;align-items:center;gap:4px;user-select:none}
+.method-btn:active{transform:scale(.97)}
+.method-btn.on{border-color:var(--lime);background:var(--lbg)}
+.method-ico{font-size:22px}
+.method-lbl{font-size:12px;font-weight:700;line-height:1.2}
+.method-sub{font-size:10px;color:var(--t3);line-height:1.3}
+.land-foot{padding:16px 22px 44px;display:flex;flex-direction:column;gap:9px}
+
+/* ═══════════════════════════════════════
+   SCAN PREP — between phases
+═══════════════════════════════════════ */
+#s-prep{align-items:stretch;justify-content:center}
+.prep-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 28px 24px;text-align:center}
+
+/* Phase stepper */
+.phase-stepper{display:flex;align-items:center;gap:0;margin-bottom:36px}
+.phase-step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.phase-circle{width:40px;height:40px;border-radius:50%;border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:18px;font-weight:700;color:var(--t4);transition:all .3s;position:relative;z-index:1}
+.phase-circle.done{background:var(--lime);border-color:var(--lime);color:var(--bg)}
+.phase-circle.active{background:transparent;border-color:var(--lime);color:var(--lime);box-shadow:0 0 16px rgba(201,240,62,.3)}
+.phase-line{height:2px;flex:1;margin-top:-28px;z-index:0}
+.phase-line.done{background:var(--lime)}
+.phase-line.pending{background:var(--bd)}
+.phase-lbl{font-size:10px;color:var(--t4);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;transition:color .3s}
+.phase-lbl.active{color:var(--lime)}
+.phase-lbl.done{color:var(--t2)}
+
+.prep-icon{width:110px;height:110px;border-radius:28px;background:var(--s1);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:54px}
+.prep-title{font-family:var(--fd);font-size:44px;font-weight:800;line-height:.95;margin-bottom:10px}
+.prep-desc{font-size:14px;color:var(--t2);line-height:1.7;max-width:300px;margin:0 auto 28px}
+.prep-steps{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;text-align:left;width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px}
+.prep-step-row{display:flex;gap:11px;align-items:flex-start}
+.prep-step-num{width:22px;height:22px;border-radius:6px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:13px;font-weight:700;color:var(--t3);flex-shrink:0;margin-top:1px}
+.prep-step-txt{font-size:12px;color:var(--t2);line-height:1.55}
+.prep-step-txt strong{color:var(--tx)}
+.prep-foot{padding:16px 24px 48px;display:flex;flex-direction:column;gap:9px}
+
+/* ═══════════════════════════════════════
+   CAMERA ACTIVE
+═══════════════════════════════════════ */
+#s-scan{overflow:hidden}
+.cam-wrap{position:relative;flex:1;background:#000;overflow:hidden;min-height:0;display:flex;flex-direction:column}
+#cam-video{width:100%;height:100%;object-fit:cover;display:block;flex:1}
+#cam-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+/* Top HUD */
+.cam-hud-top{width:100%;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent);position:absolute;top:0;left:0;z-index:10}
+.cam-phase-tag{background:rgba(0,0,0,.55);border:1px solid rgba(201,240,62,.3);border-radius:100px;padding:5px 13px;font-size:11px;font-weight:700;color:var(--lime);letter-spacing:.06em;text-transform:uppercase;backdrop-filter:blur(4px)}
+.cam-close{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff}
+
+/* Phase dots top bar */
+.cam-phase-dots{position:absolute;top:60px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
+.cpd{width:30px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);transition:all .3s}
+.cpd.done{background:var(--lime)}
+.cpd.active{background:rgba(201,240,62,.55);animation:pulse .9s ease-in-out infinite}
+
+/* Foot guide */
+.foot-guide-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:opacity .4s}
+
+/* Scan ring */
+.scan-ring-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.scan-ring{width:200px;height:200px;position:relative}
+.scan-ring svg{position:absolute;inset:0;width:100%;height:100%}
+.scan-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.ring-pct{font-family:var(--fd);font-size:44px;font-weight:800;color:#fff;line-height:1;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.ring-sub{font-size:10px;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+
+/* Badge */
+.cam-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,80px);background:rgba(0,0,0,.68);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:6px 14px;font-size:12px;color:#fff;white-space:nowrap;backdrop-filter:blur(6px);transition:all .3s;pointer-events:none;z-index:8}
+.cam-badge.ok{border-color:rgba(201,240,62,.4);color:var(--lime)}
+
+/* Bottom panel */
+.cam-panel{padding:14px 20px;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.65) 60%,transparent 100%);position:absolute;bottom:0;left:0;right:0;padding-bottom:max(16px,env(safe-area-inset-bottom));z-index:10}
+.cam-instr{text-align:center;font-size:15px;font-weight:700;color:#fff;margin-bottom:10px;line-height:1.4;min-height:44px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.cam-dots-row{display:flex;justify-content:center;gap:3px;margin-bottom:14px;flex-wrap:wrap;padding:0 10px}
+.cam-dot{width:10px;height:5px;border-radius:3px;background:rgba(255,255,255,.18);transition:all .25s;flex-shrink:0}
+.cam-dot.done{background:var(--lime)}
+.cam-dot.active{background:rgba(201,240,62,.55);animation:pulse .8s ease-in-out infinite}
+.shutter-wrap{display:flex;align-items:center;justify-content:center;gap:28px}
+.shutter-hint{font-size:11px;color:rgba(255,255,255,.5);max-width:80px;text-align:center;line-height:1.4}
+.cam-shutter{width:64px;height:64px;border-radius:50%;border:3px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.cam-shutter:active{transform:scale(.91)}
+.cam-shutter-inner{width:46px;height:46px;border-radius:50%;background:#fff}
+
+/* Phase complete overlay */
+.phase-complete{position:absolute;inset:0;background:rgba(6,6,6,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:20;opacity:0;pointer-events:none;transition:opacity .3s}
+.phase-complete.show{opacity:1;pointer-events:all}
+.phase-complete-icon{font-size:64px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+.phase-complete-title{font-family:var(--fd);font-size:40px;font-weight:800;color:var(--lime);letter-spacing:1px}
+.phase-complete-sub{font-size:14px;color:var(--t2);text-align:center;max-width:240px;line-height:1.6}
+
+/* Scan done */
+.scan-done-wrap{padding:0 0 28px}
+.scan-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 14px}
+.sres-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:13px 14px}
+.sres-card.span2{grid-column:1/3}
+.sres-lbl{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px}
+.sres-val{font-family:var(--fd);font-size:28px;font-weight:700;color:var(--lime);line-height:1}
+.sres-unit{font-size:12px;color:var(--t3);margin-left:2px}
+.sres-val-sm{font-size:14px;font-weight:600;color:var(--tx);font-family:var(--ff)}
+.conf-row{display:flex;align-items:center;gap:8px}
+.conf-bar{flex:1;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.conf-fill{height:100%;background:var(--lime);border-radius:2px;transition:width .7s ease}
+.conf-pct{font-size:12px;color:var(--t3);min-width:32px;text-align:right}
+
+/* Phase summary in result */
+.phase-summary{display:flex;gap:6px;padding:0 20px 16px}
+.psum{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:10px 8px;text-align:center}
+.psum.ok{border-color:rgba(201,240,62,.25)}
+.psum-ico{font-size:18px;margin-bottom:4px}
+.psum-lbl{font-size:10px;color:var(--t4);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.psum-v{font-size:11px;color:var(--lime);font-weight:700;margin-top:2px}
+
+/* RESULTS */
+#s-res{padding-bottom:52px}
+.res-head{padding:48px 22px 12px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
+
+/* Result tabs */
+.res-tabs{display:flex;gap:0;margin:0 22px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:4px;flex-shrink:0}
+.res-tab{flex:1;padding:9px 10px;border-radius:9px;text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--t3);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;user-select:none;letter-spacing:.01em}
+.res-tab.on{background:var(--lime);color:var(--bg)}
+.res-tab:active{opacity:.8}
+
+.res-list{padding:0 22px;display:flex;flex-direction:column;gap:12px}
+.shoe{background:var(--s1);border:1px solid var(--bd);border-radius:20px;overflow:hidden}
+.shoe.top{border-color:rgba(201,240,62,.3)}
+.shoe-header{padding:14px 14px 11px;display:flex;align-items:flex-start;gap:10px}
+.rank{width:32px;height:32px;border-radius:9px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:18px;font-weight:700;color:var(--t3);flex-shrink:0}
+.rank.gold{background:var(--lime);color:var(--bg)}
+.shoe-info{flex:1;min-width:0}
+.shoe-brand{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:1px}
+.shoe-name{font-size:15px;font-weight:700;line-height:1.2}
+.shoe-price{font-size:13px;font-weight:600;margin-top:3px}
+.shoe-price.na{color:var(--t4);font-size:11px;font-weight:400}
+.shoe-score{text-align:right;flex-shrink:0}
+.score-num{font-family:var(--fd);font-size:32px;font-weight:700;line-height:1;color:var(--lime)}
+.score-denom{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.04em}
+.shoe-divider{height:1px;background:var(--bd)}
+.shoe-body{padding:11px 14px 13px}
+.size-badge{display:flex;align-items:center;gap:8px;background:var(--lbg);border:1px solid var(--lbd);border-radius:8px;padding:7px 11px;margin-bottom:9px}
+.size-lbl{font-size:10px;color:var(--lime);font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.size-val{font-size:12px;font-weight:500}
+.reasons{display:flex;flex-direction:column;gap:3px}
+.reason{display:flex;gap:7px;font-size:11px;color:var(--t2);line-height:1.4;align-items:flex-start}
+.reason.ok .ic{color:var(--green)}
+.reason.warn .ic{color:var(--amber)}
+.reason .ic{flex-shrink:0;margin-top:1px}
+
+/* 3D FOOT VIEWER */
+.foot3d-wrap{position:relative;width:100%;height:360px;background:radial-gradient(ellipse at 50% 40%,#141a10 0%,#080a06 60%,#060606 100%);overflow:hidden;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+#foot3d-canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+#foot3d-canvas:active{cursor:grabbing}
+.foot3d-info{position:absolute;top:14px;left:14px;display:flex;gap:6px;flex-direction:column}
+.f3d-badge{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(6px);border-radius:100px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,.7);font-weight:600;white-space:nowrap}
+.foot3d-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,.5);white-space:nowrap;display:flex;align-items:center;gap:6px;backdrop-filter:blur(4px);pointer-events:none;transition:opacity .4s}
+.foot3d-views{position:absolute;top:14px;right:14px;display:flex;flex-direction:column;gap:5px}
+.f3d-view-btn{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 10px;font-size:10px;color:rgba(255,255,255,.6);cursor:pointer;font-family:var(--ff);font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;backdrop-filter:blur(4px)}
+.f3d-view-btn:active{background:rgba(201,240,62,.15);border-color:rgba(201,240,62,.3);color:var(--lime)}
+.foot3d-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 22px 12px}
+.fstat{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:11px 13px}
+.fstat-lbl{font-size:10px;color:var(--t4);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:3px}
+.fstat-val{font-size:16px;font-weight:700;color:var(--lime);font-family:var(--fd);letter-spacing:.4px}
+
+/* OVERLAYS */
+#ov{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
+#ov.on{opacity:1;pointer-events:all}
+.ov-title{font-family:var(--fd);font-size:40px;font-weight:800;color:var(--lime);letter-spacing:4px;margin-bottom:24px}
+.spinner{width:32px;height:32px;border:3px solid var(--s3);border-top-color:var(--lime);border-radius:50%;animation:spin .75s linear infinite}
+.ov-msg{margin-top:12px;font-size:13px;color:var(--t3);animation:pulse 1.4s ease-in-out infinite}
+
+#db-error{position:fixed;inset:0;background:var(--bg);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center}
+#db-error.on{display:flex}
+.dbe-ico{font-size:52px;margin-bottom:16px}
+.dbe-title{font-family:var(--fd);font-size:36px;font-weight:800;margin-bottom:10px}
+.dbe-msg{font-size:13px;color:var(--t2);line-height:1.7;max-width:300px;margin-bottom:20px}
+.code{background:var(--s1);border:1px solid var(--bd);border-radius:9px;padding:11px 14px;font-family:monospace;font-size:12px;color:#7dd3fc;line-height:1.7;text-align:left;width:100%;margin-bottom:14px}
+
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--s2);border:1px solid var(--bd2);border-radius:100px;padding:8px 18px;font-size:12px;color:var(--tx);opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:400}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══════════════════════════════════
+     LANDING
+══════════════════════════════════ -->
+<div id="s-land" class="screen on">
+  <div class="land-inner">
+    <div class="land-glow"></div>
+    <div class="logo-mark">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <path d="M6 28C9 19 16 13 24 11C30 9 36 14 36 20" stroke="#060606" stroke-width="2.5" stroke-linecap="round"/>
+        <ellipse cx="12" cy="30" rx="6" ry="3.2" fill="#060606" opacity=".55"/>
+        <path d="M19 29L35 24" stroke="#060606" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M19 29L21 34L35 29L33 24Z" fill="#060606" opacity=".38"/>
+      </svg>
+    </div>
+    <div class="land-title">FOOT<b>FIT</b></div>
+    <div class="land-sub">Löydä täydellinen juoksukenkä juuri sinun jalallesi — 3-vaiheinen 3D-profilointi puhelimellasi.</div>
+    <div class="db-status" id="db-status">
+      <div class="db-dot loading" id="db-dot"></div>
+      <span id="db-txt">Ladataan kenkätietokantaa…</span>
+    </div>
+    <div class="method-label">Valitse mittaustapa</div>
+    <div class="method-row">
+      <div class="method-btn on" id="mb-scan" onclick="setMethod('scan')">
+        <div class="method-ico">📸</div>
+        <div class="method-lbl">Kamera-skannaus</div>
+        <div class="method-sub">3-vaiheinen 3D-skannaus</div>
+      </div>
+      <div class="method-btn" id="mb-manual" onclick="setMethod('manual')">
+        <div class="method-ico">✏️</div>
+        <div class="method-lbl">Manuaalinen</div>
+        <div class="method-sub">Syötä mitat itse</div>
+      </div>
+    </div>
+  </div>
+  <div class="land-foot">
+    <button class="btn" id="start-btn" onclick="startFlow()">Aloita profilointi →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCAN PREP (between phases)
+══════════════════════════════════ -->
+<div id="s-prep" class="screen">
+  <div class="prep-body">
+
+    <!-- Phase stepper -->
+    <div class="phase-stepper" id="phase-stepper">
+      <div class="phase-step">
+        <div class="phase-circle" id="pc-0">1</div>
+        <div class="phase-lbl" id="pl-0">Ylhäältä</div>
+      </div>
+      <div class="phase-line pending" id="pline-0"></div>
+      <div class="phase-step">
+        <div class="phase-circle" id="pc-1">2</div>
+        <div class="phase-lbl" id="pl-1">Oikea sivu</div>
+      </div>
+      <div class="phase-line pending" id="pline-1"></div>
+      <div class="phase-step">
+        <div class="phase-circle" id="pc-2">3</div>
+        <div class="phase-lbl" id="pl-2">Vasen sivu</div>
+      </div>
+    </div>
+
+    <div class="prep-icon" id="prep-icon">🦶</div>
+    <div class="prep-title" id="prep-title">VALMISTAUDU</div>
+    <div class="prep-desc" id="prep-desc">Kuvaa jalka annetun ohjeen mukaan.</div>
+
+    <div class="prep-steps" id="prep-steps"></div>
+  </div>
+  <div class="prep-foot">
+    <button class="btn" id="prep-start-btn" onclick="startCurrentPhase()">Aloita skannaus →</button>
+    <button class="btn-ghost" onclick="stopAllScans()">✕ Peruuta</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     CAMERA ACTIVE
+══════════════════════════════════ -->
+<div id="s-scan" class="screen">
+  <div class="cam-wrap" id="cam-wrap">
+    <video id="cam-video" autoplay playsinline muted></video>
+    <canvas id="cam-canvas"></canvas>
+
+    <!-- Top HUD -->
+    <div class="cam-hud-top">
+      <div class="cam-phase-tag" id="cam-phase-tag">Vaihe 1/3</div>
+      <div class="cam-close" onclick="stopAllScans()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+
+    <!-- Phase progress dots -->
+    <div class="cam-phase-dots">
+      <div class="cpd active" id="cpd-0"></div>
+      <div class="cpd" id="cpd-1"></div>
+      <div class="cpd" id="cpd-2"></div>
+    </div>
+
+    <!-- Foot guides (one per phase, toggled) -->
+    <div class="foot-guide-wrap" id="guide-top">
+      <svg width="150" height="290" viewBox="0 0 150 290" fill="none">
+        <path d="M60 270 C35 268 15 248 13 215 C11 182 22 150 26 118 C30 86 23 57 34 32 C43 12 60 5 74 5 C87 5 97 12 102 26 C108 42 104 62 107 84 C110 106 117 122 122 143 C130 170 136 197 131 222 C126 250 110 268 85 270 Z" stroke="rgba(201,240,62,0.55)" stroke-width="2" fill="rgba(201,240,62,0.05)" stroke-dasharray="7 4"/>
+        <text x="75" y="285" text-anchor="middle" font-size="11" fill="rgba(201,240,62,0.6)" font-family="Manrope,sans-serif" font-weight="600">Aseta jalka tähän</text>
+      </svg>
+    </div>
+
+    <div class="foot-guide-wrap" id="guide-right" style="display:none">
+      <svg width="280" height="130" viewBox="0 0 280 130" fill="none">
+        <!-- Right side foot silhouette -->
+        <path d="M30 90 C28 70 32 50 40 35 C48 20 58 12 70 10 C82 8 90 14 95 25 C100 36 98 50 100 62 C104 75 115 82 130 84 C150 86 175 85 200 84 C220 83 240 80 255 78 C265 77 272 78 275 82 C278 86 272 94 260 96 C240 100 200 100 160 99 C120 98 75 96 55 95 C42 94 31 92 30 90 Z" stroke="rgba(201,240,62,0.55)" stroke-width="2" fill="rgba(201,240,62,0.05)" stroke-dasharray="7 4"/>
+        <text x="140" y="120" text-anchor="middle" font-size="11" fill="rgba(201,240,62,0.6)" font-family="Manrope,sans-serif" font-weight="600">Kamera oikealle puolelle</text>
+      </svg>
+    </div>
+
+    <div class="foot-guide-wrap" id="guide-left" style="display:none">
+      <svg width="280" height="130" viewBox="0 0 280 130" fill="none">
+        <!-- Left side (mirrored) foot silhouette -->
+        <path d="M250 90 C252 70 248 50 240 35 C232 20 222 12 210 10 C198 8 190 14 185 25 C180 36 182 50 180 62 C176 75 165 82 150 84 C130 86 105 85 80 84 C60 83 40 80 25 78 C15 77 8 78 5 82 C2 86 8 94 20 96 C40 100 80 100 120 99 C160 98 205 96 225 95 C238 94 249 92 250 90 Z" stroke="rgba(201,240,62,0.55)" stroke-width="2" fill="rgba(201,240,62,0.05)" stroke-dasharray="7 4"/>
+        <text x="140" y="120" text-anchor="middle" font-size="11" fill="rgba(201,240,62,0.6)" font-family="Manrope,sans-serif" font-weight="600">Kamera vasemmalle puolelle</text>
+      </svg>
+    </div>
+
+    <!-- Ring progress -->
+    <div class="scan-ring-wrap" id="scan-ring-wrap" style="display:none">
+      <div class="scan-ring">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/>
+          <circle id="scan-arc" cx="50" cy="50" r="44" fill="none" stroke="#c9f03e" stroke-width="4"
+            stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="276"
+            transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .4s ease"/>
+        </svg>
+        <div class="scan-ring-label">
+          <div class="ring-pct" id="ring-pct">0%</div>
+          <div class="ring-sub" id="ring-sub">Vaihe 1/3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status badge -->
+    <div class="cam-badge" id="cam-badge">Avataan kameraa…</div>
+
+    <!-- Phase complete overlay -->
+    <div class="phase-complete" id="phase-complete">
+      <div class="phase-complete-icon" id="pc-icon">✅</div>
+      <div class="phase-complete-title" id="pc-title">VALMIS!</div>
+      <div class="phase-complete-sub" id="pc-sub">Siirry seuraavaan vaiheeseen</div>
+    </div>
+
+    <!-- Bottom panel -->
+    <div class="cam-panel">
+      <div class="cam-instr" id="cam-instr">Aseta jalka kuvan keskelle</div>
+      <div class="cam-dots-row" id="cam-dots-row"></div>
+      <div class="shutter-wrap">
+        <div class="shutter-hint">Tai ota kuva käsin</div>
+        <div class="cam-shutter" id="cam-shutter" onclick="manualCapture()">
+          <div class="cam-shutter-inner"></div>
+        </div>
+        <div class="shutter-hint" style="opacity:0">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scan fully done - summary -->
+  <div id="scan-done" style="display:none" class="scan-done-wrap">
+    <div style="padding:22px 22px 10px">
+      <div class="eyebrow">✓ Kaikki 3 skannausta valmis</div>
+      <div class="bigtitle" style="font-size:38px;margin-bottom:14px">MITTAUSTULOS</div>
+    </div>
+    <!-- Phase summary row -->
+    <div class="phase-summary">
+      <div class="psum ok"><div class="psum-ico">🦶</div><div class="psum-lbl">Ylhäältä</div><div class="psum-v" id="psv-0">—</div></div>
+      <div class="psum ok"><div class="psum-ico">👁</div><div class="psum-lbl">Oikea sivu</div><div class="psum-v" id="psv-1">—</div></div>
+      <div class="psum ok"><div class="psum-ico">👁</div><div class="psum-lbl">Vasen sivu</div><div class="psum-v" id="psv-2">—</div></div>
+    </div>
+    <!-- Measurement grid -->
+    <div class="scan-result-grid" id="scan-result-content"></div>
+    <div style="padding:0 20px;display:flex;flex-direction:column;gap:9px">
+      <button class="btn" onclick="proceedFromScan()">Jatka →</button>
+      <button class="btn-ghost" onclick="restartScan()">↺ Skannaa uudelleen</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     QUIZ
+══════════════════════════════════ -->
+<div id="s-quiz" class="screen">
+  <div class="q-head">
+    <div class="prog"><div class="prog-fill" id="pb"></div></div>
+    <div class="q-meta" id="qm"></div>
+    <div class="bigtitle" style="font-size:38px" id="qt"></div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.65;padding-bottom:18px" id="qh"></div>
+  </div>
+  <div style="padding:0 22px" id="qb"></div>
+  <div style="padding:12px 22px 36px;display:flex;flex-direction:column;gap:7px">
+    <div class="q-err" id="qe"></div>
+    <div style="display:flex;gap:9px">
+      <button class="btn-icon" id="qback" onclick="prev()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="btn" onclick="next()">Jatka</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     RESULTS
+══════════════════════════════════ -->
+<div id="s-res" class="screen">
+
+  <!-- Header always visible -->
+  <div class="res-head">
+    <div class="eyebrow">✓ Jalkaprofiilisi valmis</div>
+    <div class="bigtitle" style="font-size:40px;margin-bottom:10px">JALKAPROFIILISI</div>
+    <div class="chips" id="rchips"></div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="res-tabs">
+    <div class="res-tab on" id="rtab-shoes" onclick="switchResTab('shoes')">
+      <span>👟</span> Kenkäsuositukset
+    </div>
+    <div class="res-tab" id="rtab-3d" onclick="switchResTab('3d')">
+      <span>🦶</span> 3D-jalkamallinnus
+    </div>
+  </div>
+
+  <!-- Shoes tab -->
+  <div id="res-shoes">
+    <div class="res-list" id="rlist"></div>
+    <div style="padding:16px 22px 0">
+      <button class="btn-ghost" onclick="restart()">↺ Uusi profilointi</button>
+    </div>
+  </div>
+
+  <!-- 3D tab -->
+  <div id="res-3d" style="display:none">
+    <div class="foot3d-wrap">
+      <canvas id="foot3d-canvas"></canvas>
+
+      <!-- Info overlay -->
+      <div class="foot3d-info">
+        <div class="f3d-badge" id="f3d-badge-len">— mm</div>
+        <div class="f3d-badge" id="f3d-badge-wid">— mm</div>
+        <div class="f3d-badge" id="f3d-badge-arch">—</div>
+      </div>
+
+      <!-- Hint -->
+      <div class="foot3d-hint" id="foot3d-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        Pyöritä vetämällä · Lähennä nipistämällä
+      </div>
+
+      <!-- View preset buttons -->
+      <div class="foot3d-views">
+        <button class="f3d-view-btn" onclick="setFootView('top')">Ylhäältä</button>
+        <button class="f3d-view-btn" onclick="setFootView('side')">Sivulta</button>
+        <button class="f3d-view-btn" onclick="setFootView('front')">Edestä</button>
+        <button class="f3d-view-btn" onclick="setFootView('iso')">3D</button>
+      </div>
+    </div>
+
+    <!-- Measurements below canvas -->
+    <div class="foot3d-stats">
+      <div class="fstat">
+        <div class="fstat-lbl">📏 Pituus</div>
+        <div class="fstat-val" id="fstat-len">— mm</div>
+      </div>
+      <div class="fstat">
+        <div class="fstat-lbl">↔ Leveys</div>
+        <div class="fstat-val" id="fstat-wid">— mm</div>
+      </div>
+      <div class="fstat">
+        <div class="fstat-lbl">🌙 Jalkakaari</div>
+        <div class="fstat-val" id="fstat-arch">—</div>
+      </div>
+      <div class="fstat">
+        <div class="fstat-lbl">👟 EU-koko</div>
+        <div class="fstat-val" id="fstat-eu">—</div>
+      </div>
+    </div>
+
+    <div style="padding:0 22px 8px">
+      <div style="font-size:11px;color:var(--t4);line-height:1.6;text-align:center">
+        3D-malli on generoitu skannausdatasi perusteella. Malli kuvaa jalkaprofiiliasi, ei ole valokuva.
+      </div>
+    </div>
+
+    <div style="padding:8px 22px 32px">
+      <button class="btn-ghost" onclick="restart()">↺ Uusi profilointi</button>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- #app -->
+
+<div id="ov"><div class="ov-title">FOOTFIT</div><div class="spinner"></div><div class="ov-msg" id="ov-msg">Ladataan…</div></div>
+<div id="db-error">
+  <div class="dbe-ico">⚠️</div>
+  <div class="dbe-title">Tiedosto puuttuu</div>
+  <div class="dbe-msg">Kenkätietokantaa <strong>shoe_data.csv</strong> ei löydy. Varmista että molemmat tiedostot ovat samassa kansiossa.</div>
+  <div class="code">footfit.html
+shoe_data.csv</div>
+  <div class="dbe-msg" style="font-size:12px">Lataa molemmat GitHub Pagesiin tai Netlify Dropiin.</div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════
+//  TILA
+// ═══════════════════════════════════════════════════
+let SHOE_DB  = [];
+let method   = 'scan';
+let scanData = null;
+let quizStep = 0;
+let ans      = {};
+
+// Scan state
+let camStream    = null;
+let camAnimId    = null;
+let prevFrameData = null;
+let capturedFrames = [];
+let lastCapTime  = 0;
+let currentPhase = 0;   // 0 = top, 1 = right side, 2 = left side
+let phaseFrames  = [[], [], []];   // frames per phase
+let phaseResults = [null, null, null]; // measurements per phase
+let scanPhase    = 'idle'; // idle | ready | scanning | done
+
+const FRAMES_PER_PHASE = 24;   // ← kuvamäärä per vaihe
+
+// ═══════════════════════════════════════════════════
+//  CSV
+// ═══════════════════════════════════════════════════
+async function loadCSV() {
+  try {
+    const res = await fetch('./shoe_data.csv');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    SHOE_DB = parseCSV(await res.text());
+    if (!SHOE_DB.length) throw new Error('empty');
+    document.getElementById('db-dot').className = 'db-dot ok';
+    document.getElementById('db-txt').textContent = SHOE_DB.length + ' kenkää · Adidas, Asics, Brooks, Hoka, NB, Nike, Saucony';
+  } catch(e) {
+    document.getElementById('db-dot').className = 'db-dot err';
+    document.getElementById('db-txt').textContent = 'shoe_data.csv ei löydy';
+    document.getElementById('start-btn').disabled = true;
+    document.getElementById('db-error').classList.add('on');
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n').filter(l => l.trim());
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1).map(line => {
+    const parts = csvSplit(line);
+    const o = {};
+    headers.forEach((h,i) => { o[h] = (parts[i]||'').trim(); });
+    return {
+      brand: o.brand||'', name: o.name||'',
+      price: o.price ? parseFloat(o.price) : null,
+      shock_absorption: o.shock_absorption ? parseFloat(o.shock_absorption) : null,
+      width: o.width ? parseFloat(o.width) : null,
+      toebox_width: o.toebox_width ? parseFloat(o.toebox_width) : null,
+      toebox_height: o.toebox_height ? parseFloat(o.toebox_height) : null,
+      size: o.size||'TTS', arch_support: o.arch_support||'Neutral', pace: o.pace||'',
+    };
+  }).filter(s => s.brand && s.name);
+}
+function csvSplit(line) {
+  const r=[]; let cur='', inQ=false;
+  for(const c of line){ if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){r.push(cur);cur='';}else{cur+=c;} }
+  r.push(cur); return r;
+}
+
+// ═══════════════════════════════════════════════════
+//  LANDING
+// ═══════════════════════════════════════════════════
+function setMethod(m) {
+  method = m;
+  document.getElementById('mb-scan').classList.toggle('on', m==='scan');
+  document.getElementById('mb-manual').classList.toggle('on', m==='manual');
+}
+
+function startFlow() {
+  scanData=null; ans={}; quizStep=0;
+  if (method==='scan') beginScanFlow();
+  else { renderQ(); go('s-land','s-quiz'); }
+}
+
+// ═══════════════════════════════════════════════════
+//  SCAN FLOW — 3 phases
+// ═══════════════════════════════════════════════════
+const PHASE_CONFIG = [
+  {
+    name:'Ylhäältä',
+    icon:'🦶',
+    title:'VAIHE 1 / 3\nYLHÄÄLTÄ',
+    desc:'Mittaa jalan pituuden ja leveyden. Pidä puhelin suoraan jalan yläpuolella.',
+    guide:'guide-top',
+    phaseTag:'Vaihe 1/3 · Ylhäältä',
+    ringLabel:'Vaihe 1/3',
+    steps:[
+      {lbl:'Aseta jalka <strong>lattialle</strong> suoraan edessäsi',},
+      {lbl:'Puhelin <strong>60–80 cm</strong> jalan yläpuolella, kohtisuoraan alas',},
+      {lbl:'Liiku <strong>hitaasti ympäri</strong> — sovellus ottaa kuvat automaattisesti',},
+    ],
+    instructions:[
+      'Aseta jalka lattialle — puhelin yläpuolella',
+      'Pyöritä puhelinta hitaasti jalan ympärillä →',
+      'Jatka pyörittämistä →',
+      '✓ Ylhäältä valmis!',
+    ],
+  },
+  {
+    name:'Oikea sivu',
+    icon:'👁',
+    title:'VAIHE 2 / 3\nOIKEA SIVU',
+    desc:'Mittaa jalkakaaren korkeus oikealta puolelta. Puhelin jalan oikealle sivulle.',
+    guide:'guide-right',
+    phaseTag:'Vaihe 2/3 · Oikea sivu',
+    ringLabel:'Vaihe 2/3',
+    steps:[
+      {lbl:'Sovellus avaa <strong>etukameran</strong> — aseta puhelin <strong>jalan oikealle sivulle</strong>'},
+      {lbl:'Pidä puhelin <strong>30–40 cm</strong> etäisyydellä jalasta, samalla korkeudella'},
+      {lbl:'Liiku hitaasti edestä taakse — sovellus ottaa kuvat automaattisesti'},
+    ],
+    instructions:[
+      'Etukamera päällä — aseta puhelin jalan oikealle sivulle',
+      'Liiku hitaasti edestaas →',
+      'Puolivälissä — jatka →',
+      '✓ Oikea sivu valmis!',
+    ],
+  },
+  {
+    name:'Vasen sivu',
+    icon:'👁',
+    title:'VAIHE 3 / 3\nVASEN SIVU',
+    desc:'Vahvistaa jalkakaaren vasemmalta. Etukamera käännetään jalan vasemmalle puolelle.',
+    guide:'guide-left',
+    phaseTag:'Vaihe 3/3 · Vasen sivu',
+    ringLabel:'Vaihe 3/3',
+    steps:[
+      {lbl:'Sovellus avaa <strong>etukameran</strong> — aseta puhelin <strong>jalan vasemmalle sivulle</strong>'},
+      {lbl:'Pidä puhelin <strong>30–40 cm</strong> etäisyydellä jalasta, samalla korkeudella'},
+      {lbl:'Liiku hitaasti edestä taakse — sovellus ottaa kuvat automaattisesti'},
+    ],
+    instructions:[
+      'Etukamera päällä — aseta puhelin jalan vasemmalle sivulle',
+      'Liiku hitaasti edestaas →',
+      'Puolivälissä — jatka →',
+      '✓ Vasen sivu valmis!',
+    ],
+  },
+];
+
+function beginScanFlow() {
+  currentPhase = 0;
+  phaseFrames  = [[],[],[]];
+  phaseResults = [null,null,null];
+  showPrepScreen(0);
+  go('s-land','s-prep');
+}
+
+function showPrepScreen(phaseIdx) {
+  const cfg = PHASE_CONFIG[phaseIdx];
+  // Update stepper
+  for (let i=0;i<3;i++) {
+    const pc = document.getElementById('pc-'+i);
+    const pl = document.getElementById('pl-'+i);
+    if (i < phaseIdx)       { pc.className='phase-circle done'; pc.textContent='✓'; pl.className='phase-lbl done'; }
+    else if (i===phaseIdx)  { pc.className='phase-circle active'; pc.textContent=i+1; pl.className='phase-lbl active'; }
+    else                    { pc.className='phase-circle'; pc.textContent=i+1; pl.className='phase-lbl'; }
+    if (i < 2) {
+      document.getElementById('pline-'+i).className = 'phase-line ' + (i<phaseIdx?'done':'pending');
+    }
+  }
+  document.getElementById('prep-icon').textContent = cfg.icon;
+  document.getElementById('prep-title').innerHTML = cfg.title.replace('\n','<br>');
+  document.getElementById('prep-desc').textContent = cfg.desc;
+  document.getElementById('prep-steps').innerHTML = cfg.steps.map((s,i)=>`
+    <div class="prep-step-row">
+      <div class="prep-step-num">${i+1}</div>
+      <div class="prep-step-txt">${s.lbl}</div>
+    </div>`).join('');
+}
+
+function startCurrentPhase() {
+  openCamera(currentPhase);
+}
+
+async function openCamera(phaseIdx) {
+  go('s-prep','s-scan');
+  resetPhaseUI(phaseIdx);
+
+  try {
+    // Vaihe 0 (ylhäältä) → takakamera. Vaiheet 1+2 (sivut) → etukamera
+    const facingMode = phaseIdx === 0 ? { ideal:'environment' } : { ideal:'user' };
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video:{ facingMode, width:{ideal:1280}, height:{ideal:720} },
+      audio:false
+    });
+    const video = document.getElementById('cam-video');
+    video.srcObject = camStream;
+    await video.play();
+    scanPhase = 'ready';
+    capturedFrames = [];
+    lastCapTime = 0;
+    prevFrameData = null;
+    document.getElementById('cam-shutter').style.display='flex'||'';
+    document.getElementById('cam-shutter').parentElement.style.display='';
+    showGuide(phaseIdx);
+    setBadge('Aseta jalka kuvaan', false);
+    setInstruction(PHASE_CONFIG[phaseIdx].instructions[0]);
+    startFrameLoop(phaseIdx);
+  } catch(e) {
+    setBadge('Kamera ei käytettävissä', false);
+    setInstruction('Kameralupia ei myönnetty. Siirry manuaaliseen tapaan.');
+    setTimeout(()=>{ stopAllScans(); setMethod('manual'); renderQ(); go('s-scan','s-quiz'); }, 3000);
+  }
+}
+
+function resetPhaseUI(phaseIdx) {
+  const cfg = PHASE_CONFIG[phaseIdx];
+  document.getElementById('cam-wrap').style.display = '';
+  document.getElementById('scan-done').style.display = 'none';
+  document.getElementById('scan-ring-wrap').style.display = 'none';
+  document.getElementById('phase-complete').classList.remove('show');
+  document.getElementById('cam-phase-tag').textContent = cfg.phaseTag;
+  document.getElementById('ring-sub').textContent = cfg.ringLabel;
+
+  // Phase progress dots
+  for(let i=0;i<3;i++){
+    const el=document.getElementById('cpd-'+i);
+    el.className='cpd'+(i<phaseIdx?' done':i===phaseIdx?' active':'');
+  }
+
+  // Frame dots — generated dynamically
+  const dotRow = document.getElementById('cam-dots-row');
+  dotRow.innerHTML = Array.from({length:FRAMES_PER_PHASE}, (_,i) =>
+    `<div class="cam-dot" id="cd-${i}"></div>`).join('');
+
+  document.getElementById('scan-arc').style.strokeDashoffset='276';
+  document.getElementById('ring-pct').textContent='0%';
+  setBadge('Avataan kameraa…',false);
+
+  // Hide all guides
+  ['guide-top','guide-right','guide-left'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+}
+
+function showGuide(phaseIdx) {
+  const guideId = PHASE_CONFIG[phaseIdx].guide;
+  document.getElementById(guideId).style.display='';
+  document.getElementById(guideId).style.opacity='.5';
+}
+
+function startFrameLoop(phaseIdx) {
+  const video  = document.getElementById('cam-video');
+  const canvas = document.getElementById('cam-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  function loop() {
+    if (!camStream) return;
+    camAnimId = requestAnimationFrame(loop);
+    if (video.readyState < 2) return;
+    canvas.width  = video.videoWidth  || 640;
+    canvas.height = video.videoHeight || 480;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if (scanPhase === 'scanning') processFrame(ctx, canvas, video, phaseIdx);
+  }
+  camAnimId = requestAnimationFrame(loop);
+}
+
+function processFrame(ctx, canvas, video, phaseIdx) {
+  const sw = Math.floor(canvas.width/4), sh = Math.floor(canvas.height/4);
+  const tmp = document.createElement('canvas');
+  tmp.width=sw; tmp.height=sh;
+  const tc = tmp.getContext('2d');
+  tc.drawImage(video,0,0,sw,sh);
+  const data = tc.getImageData(0,0,sw,sh).data;
+
+  // Motion detection
+  let motion = 0;
+  if (prevFrameData && prevFrameData.length===data.length) {
+    for(let i=0;i<data.length;i+=16){
+      motion += Math.abs(data[i]-prevFrameData[i])+Math.abs(data[i+1]-prevFrameData[i+1])+Math.abs(data[i+2]-prevFrameData[i+2]);
+    }
+    motion /= (data.length/16);
+  }
+  prevFrameData = new Uint8ClampedArray(data);
+
+  // Auto-capture on motion — tighter cooldown for 24 frames
+  const moving = motion>3 && motion<90;
+  const cooled = Date.now()-lastCapTime > 350;
+  if (moving && cooled && capturedFrames.length < FRAMES_PER_PHASE) capturePhaseFrame(video, canvas.width, canvas.height, phaseIdx);
+
+  // Motion border feedback
+  if (motion>2 && motion<90) {
+    ctx.strokeStyle='rgba(201,240,62,0.35)';
+    ctx.lineWidth=3;
+    ctx.strokeRect(8,8,canvas.width-16,canvas.height-16);
+  }
+}
+
+function capturePhaseFrame(video, vw, vh, phaseIdx) {
+  const idx = capturedFrames.length;
+  const fc = document.createElement('canvas');
+  fc.width=Math.floor(vw/2); fc.height=Math.floor(vh/2);
+  fc.getContext('2d').drawImage(video,0,0,fc.width,fc.height);
+  capturedFrames.push(fc);
+  lastCapTime = Date.now();
+
+  // Dot progress
+  const d = document.getElementById('cd-'+idx);
+  if (d) d.className='cam-dot done';
+
+  const pct = Math.round(capturedFrames.length/FRAMES_PER_PHASE*100);
+  document.getElementById('scan-arc').style.strokeDashoffset = String(276-276*pct/100);
+  document.getElementById('ring-pct').textContent = pct+'%';
+
+  const instrArr = PHASE_CONFIG[phaseIdx].instructions;
+  const instrIdx = Math.floor((capturedFrames.length/FRAMES_PER_PHASE) * (instrArr.length-1));
+  setInstruction(instrArr[Math.min(instrIdx, instrArr.length-2)]);
+  setBadge(`✓ ${capturedFrames.length}/${FRAMES_PER_PHASE} kuvaa otettu`, true);
+
+  if (capturedFrames.length >= FRAMES_PER_PHASE) finalizePhase(phaseIdx);
+}
+
+function manualCapture() {
+  const video = document.getElementById('cam-video');
+  if (!video.videoWidth) return;
+  if (scanPhase === 'ready') activateScan();
+  if (capturedFrames.length < FRAMES_PER_PHASE) capturePhaseFrame(video, video.videoWidth, video.videoHeight, currentPhase);
+}
+
+function activateScan() {
+  scanPhase = 'scanning';
+  document.getElementById('scan-ring-wrap').style.display='flex';
+  const guideId = PHASE_CONFIG[currentPhase].guide;
+  document.getElementById(guideId).style.opacity='.2';
+  setBadge('Liiku hitaasti — automaattinen tallennus', false);
+}
+
+function finalizePhase(phaseIdx) {
+  if (camAnimId) { cancelAnimationFrame(camAnimId); camAnimId=null; }
+  scanPhase = 'done';
+
+  // Analyze frames
+  phaseFrames[phaseIdx] = [...capturedFrames];
+  phaseResults[phaseIdx] = analyzePhaseFrames(capturedFrames, phaseIdx);
+
+  // Stop camera
+  if (camStream) { camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+
+  // Update phase dot
+  const cpd = document.getElementById('cpd-'+phaseIdx);
+  if (cpd) cpd.className='cpd done';
+
+  // Show phase complete overlay
+  const pcIcon  = phaseIdx===0?'✅':phaseIdx===1?'👁':'🎉';
+  const pcTitle = phaseIdx===2?'KAIKKI VALMIS!':'VALMIS!';
+  const pcSub   = phaseIdx===2?'Lasketaan tuloksia…':['Siirry oikeaan sivukuvaukseen','Siirry vasempaan sivukuvaukseen'][phaseIdx];
+  document.getElementById('pc-icon').textContent  = pcIcon;
+  document.getElementById('pc-title').textContent = pcTitle;
+  document.getElementById('pc-sub').textContent   = pcSub;
+  document.getElementById('phase-complete').classList.add('show');
+
+  if (phaseIdx < 2) {
+    // Next phase after delay
+    setTimeout(() => {
+      document.getElementById('phase-complete').classList.remove('show');
+      currentPhase = phaseIdx+1;
+      showPrepScreen(currentPhase);
+      go('s-scan','s-prep');
+    }, 1800);
+  } else {
+    // All 3 done
+    setTimeout(() => {
+      document.getElementById('phase-complete').classList.remove('show');
+      showAllScanResults();
+    }, 1400);
+  }
+}
+
+// ─── Phase analysis ──────────────────────────────────
+// KALIBROIDUT MITTAUSKERTOIMET
+// Tyypillinen puhelinKamera 60-70° FOV, ~40-50cm etäisyys:
+//   Todellinen kuvanleveys ≈ 450mm (konservatiivinen arvio)
+// Vanha 520mm yliarvioi → 270mm jalka näkyi 310mm
+// Pikselimittaus: käytetään 10. persentiiliä (jalka ei voi näyttää pienemmältä)
+
+const CAM_REAL_WIDTH_MM = 450;   // kalibroitu arvo (oli 520 → liikaa ~15%)
+const CAM_HEIGHT_RATIO  = 9/16;  // 16:9 video → korkeus = leveys * 9/16
+
+function percentile(arr, p) {
+  // p = 0..100
+  if (!arr.length) return 0;
+  const s = [...arr].sort((a,b)=>a-b);
+  const idx = Math.max(0, Math.floor((p/100) * (s.length-1)));
+  return s[idx];
+}
+
+function analyzePhaseFrames(frames, phaseIdx) {
+  const meas = frames.map(fc => measureFrame(fc, phaseIdx));
+
+  if (phaseIdx === 0) {
+    // ── TOP VIEW: pituus + leveys ──────────────────
+    const refFrame = frames[0];
+    const mmPerPx  = CAM_REAL_WIDTH_MM / refFrame.width;
+
+    const rawLengths = meas.map(m=>m.length_px).filter(v=>v>10);
+    const rawWidths  = meas.map(m=>m.width_px ).filter(v=>v>10);
+
+    if (!rawLengths.length) return { length_mm:265, width_mm:95, conf:0.5, frames:frames.length };
+
+    // Pituus: 18. persentiilit — kalibroitu: 270mm jalka näkyy oikein
+    const lengthPx = percentile(rawLengths, 18);
+
+    // LEVEYS: alkuperäinen mediaani — toimii oikein
+    const sortedW  = [...rawWidths].sort((a,b)=>a-b);
+    const midW     = Math.floor(sortedW.length/2);
+    const widthPx  = sortedW.length%2 ? sortedW[midW] : (sortedW[midW-1]+sortedW[midW])/2;
+
+    const length_mm = Math.round(Math.max(200, Math.min(300, lengthPx * mmPerPx)));
+    const width_mm  = Math.round(Math.max(75,  Math.min(120, widthPx  * mmPerPx)));
+
+    const conf = Math.min(0.96, 0.55 + frames.length * 0.018);
+    return { length_mm, width_mm, conf, frames:frames.length };
+
+  } else {
+    // ── SIDE VIEW: jalkakaari ──────────────────────
+    const archs = meas.map(m=>m.arch_score).filter(v=>v>=0);
+    // Mediaani sivuprofiilista
+    const archScore = percentile(archs, 50);
+    const arch_type = archScore>0.58?'high':archScore>0.28?'neutral':'low';
+    const conf = Math.min(0.94, 0.55 + frames.length * 0.018);
+    return { arch_type, arch_score:archScore, conf, frames:frames.length };
+  }
+}
+
+function measureFrame(fc, phaseIdx) {
+  const ctx = fc.getContext('2d');
+  const w = fc.width, h = fc.height;
+  const data = ctx.getImageData(0,0,w,h).data;
+
+  // Alkuperäinen logiikka: yksinkertainen tummuuskynnys + 15% marginaali
+  const margin = Math.floor(w * 0.15);
+  let minX=w, maxX=0, minY=h, maxY=0, footPixels=0;
+  const rowWidths = new Array(h).fill(0);
+
+  for(let y=margin; y<h-margin; y++){
+    let rowMin=w, rowMax=0;
+    for(let x=margin; x<w-margin; x++){
+      const i=(y*w+x)*4;
+      const bright=(data[i]+data[i+1]+data[i+2])/3;
+      if(bright < 120){
+        if(x<minX)minX=x; if(x>maxX)maxX=x;
+        if(y<minY)minY=y; if(y>maxY)maxY=y;
+        if(x<rowMin)rowMin=x; if(x>rowMax)rowMax=x;
+        footPixels++;
+      }
+    }
+    if(rowMax>rowMin) rowWidths[y]=rowMax-rowMin;
+  }
+
+  const areaCovered = footPixels / ((w-2*margin)*(h-2*margin));
+  if(areaCovered < 0.03 || areaCovered > 0.6){
+    return { length_px: h*0.55, width_px: h*0.20, arch_score:0.4, rowWidths:[] };
+  }
+
+  const length_px = maxY - minY;
+  const width_px  = maxX - minX;
+
+  // Jalkakaari sivuprofiilista (vaiheet 1 ja 2)
+  let archScore = 0.38;
+  if(phaseIdx > 0 && length_px > 20){
+    const mfY1 = minY + length_px*0.28;
+    const mfY2 = minY + length_px*0.68;
+    let minRowH=width_px, maxRowH=0;
+    for(let y=Math.floor(mfY1); y<Math.floor(mfY2); y++){
+      const rw=rowWidths[y]||0;
+      if(rw>0){ minRowH=Math.min(minRowH,rw); maxRowH=Math.max(maxRowH,rw); }
+    }
+    if(maxRowH>0) archScore=Math.min(1,(maxRowH-minRowH)/(width_px*0.45+1));
+  }
+
+  return { length_px, width_px, arch_score:Math.max(0,Math.min(1,archScore)), rowWidths };
+}
+
+function showAllScanResults() {
+  const top   = phaseResults[0] || {};
+  const right = phaseResults[1] || {};
+  const left  = phaseResults[2] || {};
+
+  // Combine arch from both side views
+  const archScores=[right.arch_score,left.arch_score].filter(v=>v!=null);
+  const archAvg = archScores.length ? archScores.reduce((a,b)=>a+b)/archScores.length : 0.4;
+  const arch_type = archAvg>0.62?'high':archAvg>0.32?'neutral':'low';
+
+  const conf = Math.min(0.97, ((top.conf||0.7)+(right.conf||0.7)+(left.conf||0.7))/3+0.05);
+
+  scanData = {
+    length_mm: top.length_mm || 260,
+    width_mm:  top.width_mm  || 95,
+    arch_type,
+    confidence: conf,
+    source: 'camera-3d',
+    phases: 3,
+  };
+
+  // Phase summary values
+  document.getElementById('psv-0').textContent = `${scanData.length_mm}×${scanData.width_mm}mm`;
+  document.getElementById('psv-1').textContent = {high:'Korkea',neutral:'Neutraali',low:'Matala'}[right.arch_type||arch_type];
+  document.getElementById('psv-2').textContent = {high:'Korkea',neutral:'Neutraali',low:'Matala'}[left.arch_type||arch_type];
+
+  // Result cards
+  const pct=Math.round(conf*100);
+  const archL={low:'Matala (lattajalka)',neutral:'Neutraali',high:'Korkea (kupera)'};
+  document.getElementById('scan-result-content').innerHTML=`
+    <div class="sres-card"><div class="sres-lbl">📏 Pituus</div><div class="sres-val">${scanData.length_mm}<span class="sres-unit">mm</span></div></div>
+    <div class="sres-card"><div class="sres-lbl">↔ Leveys</div><div class="sres-val">${scanData.width_mm}<span class="sres-unit">mm</span></div></div>
+    <div class="sres-card"><div class="sres-lbl">👟 EU-koko (arvio)</div><div class="sres-val-sm">${euSize(scanData.length_mm,'TTS')}</div></div>
+    <div class="sres-card"><div class="sres-lbl">🌙 Jalkakaari</div><div class="sres-val-sm">${archL[arch_type]}</div></div>
+    <div class="sres-card span2">
+      <div class="sres-lbl" style="margin-bottom:8px">Luotettavuus · ${phaseResults.filter(p=>p).length} vaihetta skannattu</div>
+      <div class="conf-row"><div class="conf-bar"><div class="conf-fill" style="width:${pct}%"></div></div><span class="conf-pct">${pct}%</span></div>
+      ${pct<68?'<div style="font-size:11px;color:var(--amber);margin-top:8px">⚠ Heikko laatu — yritä paremmassa valaistuksessa.</div>':''}
+    </div>`;
+
+  document.getElementById('cam-wrap').style.display='none';
+  document.getElementById('scan-done').style.display='';
+}
+
+function proceedFromScan() {
+  if (scanData) ans.arch = scanData.arch_type || 'neutral';
+  renderQ();
+  go('s-scan','s-quiz');
+}
+function restartScan() { stopAllScans(); beginScanFlow(); go('s-scan','s-prep'); }
+function stopAllScans() {
+  if (camAnimId) { cancelAnimationFrame(camAnimId); camAnimId=null; }
+  if (camStream) { camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+  prevFrameData=null; scanPhase='idle';
+  go('s-scan','s-land'); go('s-prep','s-land');
+}
+
+// Helpers
+function setInstruction(txt) { document.getElementById('cam-instr').textContent=txt; }
+function setBadge(txt,ok) { const e=document.getElementById('cam-badge'); e.textContent=txt; e.className='cam-badge'+(ok?' ok':''); }
+
+// ═══════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════
+const STEPS_SCAN = [
+  { id:'arch', title:'Jalkakaari', type:'arch',
+    hint:'Kamera tunnisti jalkakaaren automaattisesti. Varmista tai muuta.',
+    tip:'💧 Kasta jalka ja aseta paperille. Kapea jälki = korkea kaari.' },
+  { id:'pace', title:'Käyttötarkoitus', type:'multi',
+    hint:'Mihin aiot kenkiä käyttää? Voit valita useamman.',
+    opts:[{v:'daily',l:'Päivittäinen lenkkeily',s:'Pitkät juoksut, palautuminen',i:'🏃'},{v:'tempo',l:'Tempo & intervallit',s:'Vauhtijuoksu, treenilenkit',i:'⚡'},{v:'race',l:'Kilpajuoksu',s:'Kilpailut, ennätyshaku',i:'🏆'}]},
+  { id:'experience', title:'Kokemusaste', type:'single',
+    hint:'Juoksutaustasi vaikuttaa iskunvaimennussuositukseen.',
+    opts:[{v:'beginner',l:'Aloittelija',s:'Alle 1 v tai alle 20 km/vko',i:'🌱'},{v:'intermediate',l:'Harrastelija',s:'1–3 v tai 20–60 km/vko',i:'💪'},{v:'advanced',l:'Kokenut juoksija',s:'3+ v tai yli 60 km/vko',i:'🔥'}]},
+  { id:'budget', title:'Budjetti', type:'single',
+    hint:'Kuinka paljon olet valmis käyttämään?',
+    opts:[{v:100,l:'Alle 100 €',s:'',i:'💶'},{v:150,l:'100 – 150 €',s:'',i:'💶'},{v:200,l:'150 – 200 €',s:'',i:'💶'},{v:9999,l:'Yli 200 €',s:'Ei rajoitusta',i:'💎'}]},
+];
+const STEPS_MANUAL = [
+  { id:'length', title:'Jalan pituus', type:'num', unit:'mm', ph:'esim. 265', min:180, max:340,
+    hint:'Kantapäästä pisimmän varpaanpäähän.',
+    tip:'📏 Aseta jalka A4-paperin päälle. Merkitse kantapää ja pisin varvas, mittaa väli.' },
+  { id:'width', title:'Jalan leveys', type:'num', unit:'mm', ph:'esim. 95', min:60, max:140,
+    hint:'Leveimmästä kohdasta — varpaiden tyven kohdalta.',
+    tip:'📐 Seiso normaalisti. Mittaa suoraan leveimmästä kohdasta.' },
+  ...STEPS_SCAN,
+];
+
+let STEPS=[];
+function renderQ() { STEPS=method==='manual'?STEPS_MANUAL:STEPS_SCAN; renderStep(); }
+
+function renderStep() {
+  const s=STEPS[quizStep], total=STEPS.length;
+  document.getElementById('pb').style.width=(quizStep/total*100)+'%';
+  document.getElementById('qm').textContent=`Vaihe ${quizStep+1} / ${total}`;
+  document.getElementById('qt').textContent=s.title;
+  document.getElementById('qh').textContent=s.hint;
+  document.getElementById('qe').textContent='';
+  document.getElementById('qback').style.display=quizStep===0?'none':'flex';
+  const b=document.getElementById('qb');
+  b.innerHTML='';
+
+  if(s.id==='arch'&&scanData&&scanData.arch_type){
+    if(!ans.arch) ans.arch=scanData.arch_type;
+    const lbl={low:'Matala kaari',neutral:'Neutraali',high:'Korkea kaari'}[scanData.arch_type];
+    b.innerHTML+=`<div style="background:var(--lbg);border:1px solid var(--lbd);border-radius:9px;padding:9px 13px;font-size:12px;color:var(--lime);display:flex;gap:8px;align-items:center;margin-bottom:12px">📸 Kamera tunnisti: <strong>${lbl}</strong> — voit muuttaa</div>`;
+  }
+  if(s.type==='num'){
+    b.innerHTML+=`<div class="num-wrap"><input type="number" inputmode="numeric" pattern="[0-9]*" id="ni" placeholder="${s.ph}" value="${ans[s.id]||''}" onkeydown="if(event.key==='Enter')next()"><span class="num-unit">${s.unit}</span></div><div style="height:6px"></div><div class="tip-box"><span class="tip-icon">💡</span><span>${s.tip}</span></div>`;
+    setTimeout(()=>document.getElementById('ni')?.focus(),250);
+  }
+  if(s.type==='arch'){
+    const sel=ans.arch||'';
+    const A=[{v:'low',l:'Matala',sub:'Lattajalka',d:'M5 40 C20 39 40 39 56 38'},{v:'neutral',l:'Neutraali',sub:'Normaali',d:'M5 40 C15 31 27 21 37 19 C47 17 53 25 56 31'},{v:'high',l:'Korkea',sub:'Kupera kaari',d:'M5 40 C13 27 21 11 31 7 C41 3 51 17 56 27'}];
+    b.innerHTML+=`<div class="arch-row">${A.map(a=>`<div class="arch-c ${sel===a.v?'on':''}" onclick="pickArch('${a.v}',this)"><div class="arch-svg"><svg width="62" height="48" viewBox="0 0 62 48" fill="none"><path d="M5 42 L56 42" stroke="#2c2c2c" stroke-width="1.5"/><path d="${a.d} L56 42 L5 42 Z" fill="rgba(201,240,62,.07)"/><path d="${a.d}" stroke="#c9f03e" stroke-width="2.2" stroke-linecap="round"/></svg></div><div class="arch-lbl">${a.l}</div><div class="arch-sub">${a.sub}</div></div>`).join('')}</div><div style="height:10px"></div><div class="tip-box"><span class="tip-icon">💡</span><span>${s.tip}</span></div>`;
+  }
+  if(s.type==='multi'){
+    const sel=ans[s.id]||[];
+    b.innerHTML+=`<div class="opts">${s.opts.map(o=>`<div class="opt ${sel.includes(o.v)?'on':''}" onclick="togM('${s.id}','${o.v}',this)"><div class="opt-ico">${o.i}</div><div class="opt-txt"><div class="opt-lbl">${o.l}</div><div class="opt-sub">${o.s}</div></div><div class="chk sq"></div></div>`).join('')}</div>`;
+  }
+  if(s.type==='single'){
+    const sel=ans[s.id];
+    b.innerHTML+=`<div class="opts">${s.opts.map(o=>`<div class="opt ${sel===o.v?'on':''}" onclick="pickS('${s.id}','${o.v}',this)"><div class="opt-ico">${o.i}</div><div class="opt-txt"><div class="opt-lbl">${o.l}</div>${o.s?`<div class="opt-sub">${o.s}</div>`:''}</div><div class="chk"></div></div>`).join('')}</div>`;
+  }
+}
+
+function pickArch(v,el){ans.arch=v;document.querySelectorAll('.arch-c').forEach(c=>c.classList.remove('on'));el.classList.add('on')}
+function togM(id,v,card){if(!ans[id])ans[id]=[];const i=ans[id].indexOf(v);i===-1?ans[id].push(v):ans[id].splice(i,1);card.classList.toggle('on',ans[id].includes(v));card.querySelector('.chk')?.classList.toggle('on',ans[id].includes(v))}
+function pickS(id,v,card){ans[id]=v;document.querySelectorAll('#qb .opt').forEach(c=>{c.classList.remove('on');c.querySelector('.chk')?.classList.remove('on')});card.classList.add('on');card.querySelector('.chk')?.classList.add('on')}
+
+function prev(){
+  if(quizStep===0){method==='manual'?go('s-quiz','s-land'):go('s-quiz','s-land');return;}
+  quizStep--;renderStep();
+}
+function next(){
+  const s=STEPS[quizStep],e=document.getElementById('qe');
+  if(s.type==='num'){const v=parseFloat(document.getElementById('ni').value);if(isNaN(v)||v<s.min||v>s.max){e.textContent=`Syötä arvo välillä ${s.min}–${s.max} mm`;return;}ans[s.id]=v;}
+  if(s.type==='arch'&&!ans.arch){e.textContent='Valitse jalkakaari';return;}
+  if(s.type==='multi'&&!(ans[s.id]||[]).length){e.textContent='Valitse vähintään yksi';return;}
+  if(s.type==='single'&&ans[s.id]===undefined){e.textContent='Valitse vaihtoehto';return;}
+  if(quizStep<STEPS.length-1){quizStep++;renderStep();}
+  else{
+    showOv('Analysoidaan jalkaprofiiliasi…');
+    setTimeout(()=>{const r=recommend();hideOv();renderRes(r);go('s-quiz','s-res');},1200);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  ALGORITMI
+// ═══════════════════════════════════════════════════
+const wClass=(w,l)=>{const r=w/l;return r<.36?'narrow':r<.40?'normal':r<.43?'wide':'extra-wide'};
+function euSize(l,sz){const eu=Math.round(((l+12)/6.67)+1.5);return sz==='Small'?`EU ${eu} → osta ½ isompi`:`EU ${eu} (TTS)`}
+
+function recommend(){
+  const length=scanData?scanData.length_mm:ans.length;
+  const width =scanData?scanData.width_mm :ans.width;
+  const{arch,pace,experience,budget}=ans;
+  const wc=wClass(width,length);
+  return SHOE_DB.map(shoe=>{
+    let sc=0;const rea=[],war=[];
+    const full=shoe.shock_absorption&&shoe.toebox_width;
+    // Pace 35p
+    let ps=0.25;
+    if(shoe.pace){const sp=shoe.pace.toLowerCase().split('|').map(x=>x.trim());const m=pace.filter(p=>sp.includes(p.toLowerCase())).length;ps=m/Math.max(pace.length,sp.length);}
+    sc+=ps*35;if(ps>0.5&&shoe.pace)rea.push(`Sopii käyttötarkoitukseesi (${shoe.pace.replace(/\|/g,', ')})`);
+    // Arch 25p
+    const am={low:{stability:1,neutral:.3},neutral:{neutral:1,stability:.65},high:{neutral:1,stability:.35}};
+    const as2=(am[arch]||{})[shoe.arch_support?.toLowerCase()]??0.5;
+    sc+=as2*25;if(as2===1)rea.push(`Oikea tukityyppi: ${shoe.arch_support}`);else if(as2<=.35)war.push('Tukityyppi ei vastaa parhaiten jalkakaartasi');
+    // Width 20p
+    if(full){const tw=shoe.toebox_width;let ws=.5,wr=null,ww=null;
+      if(wc==='narrow'){ws=tw<73?1:.6;if(ws>.9)wr='Kapea varvaslaatikko sopii';}
+      else if(wc==='normal'){ws=tw>=70&&tw<=76?1:.7;if(ws>.9)wr='Varvaslaatikko sopii jalkaleveyteesi';}
+      else if(wc==='wide'){ws=tw>=74?1:.3;if(ws>.9)wr='Leveä varvaslaatikko';else ww='Varvaslaatikko voi olla liian kapea';}
+      else{ws=tw>=77?1:.15;if(ws>.9)wr='Erittäin leveä varvaslaatikko';else ww='Kenkä todennäköisesti liian kapea';}
+      sc+=ws*20;if(wr)rea.push(wr);if(ww)war.push(ww);
+    }else{sc+=10;war.push('Varvaslaatikon leveys puuttuu tietokannasta');}
+    // Budget 10p
+    let bs=1;if(shoe.price&&budget<9999){if(shoe.price>budget*1.15){bs=0;war.push(`Hinta ${shoe.price}€ ylittää budjettisi`);}else if(shoe.price>budget)bs=.5;}sc+=bs*10;
+    // Shock 10p
+    if(full){const s2=shoe.shock_absorption;const es=experience==='beginner'?Math.min(s2/148,1):experience==='intermediate'?(s2>=120?1:.6):(s2>=100?1:.8);sc+=es*10;if(es>=.8)rea.push('Iskunvaimennus sopii kokemustasollesi');}else sc+=5;
+    // 3D bonus
+    if(scanData&&scanData.confidence>0.75&&full)sc+=3;
+    return{...shoe,score:Math.min(100,Math.round(sc)),rea,war,sz:euSize(length,shoe.size||'TTS')};
+  }).sort((a,b)=>b.score-a.score).slice(0,5);
+}
+
+// ═══════════════════════════════════════════════════
+//  RESULT TABS
+// ═══════════════════════════════════════════════════
+let activeResTab = 'shoes';
+let foot3dInit   = false;
+
+function switchResTab(tab) {
+  activeResTab = tab;
+  document.getElementById('rtab-shoes').classList.toggle('on', tab==='shoes');
+  document.getElementById('rtab-3d').classList.toggle('on', tab==='3d');
+  document.getElementById('res-shoes').style.display = tab==='shoes' ? '' : 'none';
+  document.getElementById('res-3d').style.display    = tab==='3d'    ? '' : 'none';
+  if (tab==='3d' && !foot3dInit) { foot3dInit=true; initFoot3D(); }
+  else if (tab==='3d') { resizeFoot3D(); }
+}
+
+// ═══════════════════════════════════════════════════
+//  RESULTS
+// ═══════════════════════════════════════════════════
+function renderRes(recs){
+  const length=scanData?scanData.length_mm:ans.length;
+  const width =scanData?scanData.width_mm :ans.width;
+  const{arch,pace,experience,budget}=ans;
+  const wc=wClass(width,length);
+  const aL={low:'Matala kaari',neutral:'Neutraali',high:'Korkea kaari'};
+  const eL={beginner:'Aloittelija',intermediate:'Harrastelija',advanced:'Kokenut'};
+  const bL={100:'alle 100€',150:'100–150€',200:'150–200€',9999:'yli 200€'};
+  const src=scanData?'📸 3D-skannaus':'✏️ Manuaalinen';
+
+  // Reset tab to shoes each time
+  activeResTab='shoes'; foot3dInit=false;
+  document.getElementById('res-shoes').style.display='';
+  document.getElementById('res-3d').style.display='none';
+  document.getElementById('rtab-shoes').classList.add('on');
+  document.getElementById('rtab-3d').classList.remove('on');
+
+  document.getElementById('rchips').innerHTML=[
+    {t:`${length}×${width}mm`,h:true},
+    {t:aL[arch]},{t:wc},{t:pace.join(', ')},{t:eL[experience]},{t:bL[budget]},{t:src,scan:!!scanData}
+  ].map(c=>`<span class="pill${c.h?' hi':c.scan?' blue':''}">${c.t}</span>`).join('');
+
+  document.getElementById('rlist').innerHTML=recs.map((s,i)=>`
+    <div class="shoe${i===0?' top':''}">
+      <div class="shoe-header">
+        <div class="rank${i===0?' gold':''}">#${i+1}</div>
+        <div class="shoe-info">
+          <div class="shoe-brand">${(s.brand||'').trim()}</div>
+          <div class="shoe-name">${s.name}</div>
+          <div class="${s.price?'shoe-price':'shoe-price na'}">${s.price?s.price+'€':'–'}</div>
+        </div>
+        <div class="shoe-score"><div class="score-num">${s.score}</div><div class="score-denom">/ 100</div></div>
+      </div>
+      <div class="shoe-divider"></div>
+      <div class="shoe-body">
+        <div class="size-badge"><span class="size-lbl">👟 Koko</span><span class="size-val">${s.sz}</span></div>
+        <div class="reasons">
+          ${s.rea.map(r=>`<div class="reason ok"><span class="ic">✓</span><span>${r}</span></div>`).join('')}
+          ${s.war.map(w=>`<div class="reason warn"><span class="ic">⚠</span><span>${w}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Prefill 3D stats
+  const archLabel = {low:'Matala kaari',neutral:'Neutraali kaari',high:'Korkea kaari'}[arch]||'Neutraali';
+  document.getElementById('fstat-len').textContent  = length + ' mm';
+  document.getElementById('fstat-wid').textContent  = width  + ' mm';
+  document.getElementById('fstat-arch').textContent = archLabel;
+  document.getElementById('fstat-eu').textContent   = euSize(length, 'TTS');
+  document.getElementById('f3d-badge-len').textContent  = '📏 ' + length + ' mm';
+  document.getElementById('f3d-badge-wid').textContent  = '↔ '  + width  + ' mm';
+  document.getElementById('f3d-badge-arch').textContent = '🌙 ' + archLabel;
+}
+
+// ═══════════════════════════════════════════════════
+//  3D FOOT ENGINE  (Three.js r128)
+// ═══════════════════════════════════════════════════
+let f3d = {};   // { scene, camera, renderer, foot, animId, ... }
+
+function initFoot3D() {
+  const canvas = document.getElementById('foot3d-canvas');
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+
+  // Scene
+  const scene = new THREE.Scene();
+
+  // Camera
+  const camera = new THREE.PerspectiveCamera(42, W/H, 0.01, 20);
+  camera.position.set(0, 0.18, 0.52);
+  camera.lookAt(0,0,0);
+
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(W, H);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  // Lighting
+  const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+  scene.add(ambient);
+
+  const key = new THREE.DirectionalLight(0xfff5e0, 1.6);
+  key.position.set(0.4, 0.8, 0.6);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024,1024);
+  scene.add(key);
+
+  const fill = new THREE.DirectionalLight(0xc8e8ff, 0.5);
+  fill.position.set(-0.5, 0.3, -0.3);
+  scene.add(fill);
+
+  const rim = new THREE.DirectionalLight(0xc9f03e, 0.25);
+  rim.position.set(0, -0.5, -0.8);
+  scene.add(rim);
+
+  // Ground plane (shadow only)
+  const groundGeo = new THREE.PlaneGeometry(2,2);
+  const groundMat = new THREE.ShadowMaterial({ opacity:0.18 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -0.095;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // Build foot mesh
+  const foot = buildFootMesh();
+  foot.castShadow = true;
+  foot.receiveShadow = true;
+  scene.add(foot);
+
+  // Subtle ground glow
+  const glowGeo = new THREE.CircleGeometry(0.14, 32);
+  const glowMat = new THREE.MeshBasicMaterial({ color:0xc9f03e, transparent:true, opacity:0.06 });
+  const glow = new THREE.Mesh(glowGeo, glowMat);
+  glow.rotation.x = -Math.PI/2;
+  glow.position.y = -0.094;
+  scene.add(glow);
+
+  // Grid lines (subtle)
+  const grid = new THREE.GridHelper(0.6, 8, 0x1a1a1a, 0x141414);
+  grid.position.y = -0.095;
+  scene.add(grid);
+
+  f3d = { scene, camera, renderer, foot, canvas,
+          rotX:0.28, rotY:0.0, targetRotX:0.28, targetRotY:0.0,
+          zoom:1, targetZoom:1, animId:null,
+          isDragging:false, lastX:0, lastY:0,
+          pinchDist:0 };
+
+  attachOrbitControls(canvas);
+  animateFoot3D();
+
+  // Fade out hint after 3s
+  setTimeout(()=>{ const h=document.getElementById('foot3d-hint'); if(h) h.style.opacity='0'; }, 3200);
+}
+
+// ─── Parametric foot geometry — uses real scan measurements ───────────────
+function buildFootMesh() {
+  const length = scanData ? scanData.length_mm : (ans.length||265);
+  const width  = scanData ? scanData.width_mm  : (ans.width ||96);
+  const arch   = (scanData ? scanData.arch_type : ans.arch) || 'neutral';
+
+  const scale  = 0.26;   // scene units (26cm ≈ EU43 length)
+  const archH  = arch==='high' ? 0.046 : arch==='low' ? 0.008 : 0.026;
+  const wRatio = Math.min(0.46, Math.max(0.30, width / length));
+
+  // Build per-position profile from actual top-view frame data if available
+  // phaseFrames[0] contains top-view frames — extract median row-width profile
+  const topProfile = buildTopProfile(phaseFrames[0] || []);
+
+  // ── Cross-section table: t=0 heel … t=1 toe ──
+  // hw = half-width fraction (0..1),  h = height fraction,  al = arch lift (m)
+  // These are adjusted by wRatio and the actual scan profile
+  const BASE_SECTIONS = [
+    { t:0.00, hw:0.46, h:0.55 },
+    { t:0.06, hw:0.50, h:0.58 },
+    { t:0.13, hw:0.48, h:0.56 },
+    { t:0.22, hw:0.43, h:0.48 },
+    { t:0.32, hw:0.35, h:0.38 },
+    { t:0.42, hw:0.36, h:0.40 },
+    { t:0.52, hw:0.40, h:0.42 },
+    { t:0.62, hw:0.49, h:0.46 },
+    { t:0.70, hw:0.52, h:0.50 },  // ball — widest
+    { t:0.76, hw:0.50, h:0.45 },
+    { t:0.82, hw:0.46, h:0.38 },
+    { t:0.88, hw:0.40, h:0.30 },
+    { t:0.93, hw:0.31, h:0.22 },
+    { t:0.97, hw:0.21, h:0.14 },
+    { t:1.00, hw:0.09, h:0.07 },
+  ];
+
+  // Apply real width profile from scan
+  const sections = BASE_SECTIONS.map(s => {
+    let hw = s.hw;
+    if (topProfile.length > 0) {
+      const idx = Math.round(s.t * (topProfile.length-1));
+      const profileVal = topProfile[idx];   // 0..1 normalized width
+      // Blend 60% scan data, 40% base shape
+      hw = profileVal * 0.60 + s.hw * 0.40;
+    }
+    // Scale by actual wRatio
+    hw = hw * (wRatio / 0.40);
+
+    // Arch lift curve: peaks at t≈0.35
+    const archCurve = Math.max(0, 1 - Math.abs(s.t - 0.32) * 3.5);
+    const al = archH * archCurve;
+
+    return { t:s.t, hw:Math.min(0.60, Math.max(0.06, hw)), h:s.h, al };
+  });
+
+  const maxW = scale * 0.40;  // max half-width in scene units (normalized to length)
+  const maxH = 0.092;
+  const fLen = scale;
+  const SEGS = 28;
+
+  function ellipsePoints(hw, ht, al, cz) {
+    const pts = [];
+    for(let i=0; i<=SEGS; i++){
+      const ang = (i/SEGS)*Math.PI*2;
+      const x = Math.cos(ang) * hw * maxW;
+      const yRaw = Math.sin(ang);
+      // Flatten the bottom (~20% of ellipse) for flat sole
+      const y = (yRaw < -0.25 ? -0.25 + (yRaw+0.25)*0.25 : yRaw) * ht * maxH + al;
+      pts.push(new THREE.Vector3(x, y, cz));
+    }
+    return pts;
+  }
+
+  const rings = sections.map(s => ellipsePoints(s.hw, s.h, s.al, -(s.t-0.5)*fLen));
+
+  const positions=[], uvsArr=[];
+  for(let r=0; r<rings.length-1; r++){
+    const [rA,rB,tA,tB] = [rings[r],rings[r+1],sections[r].t,sections[r+1].t];
+    for(let i=0; i<SEGS; i++){
+      const i1=(i+1)%SEGS;
+      const [p0,p1,p2,p3]=[rA[i],rA[i1],rB[i],rB[i1]];
+      positions.push(p0.x,p0.y,p0.z, p1.x,p1.y,p1.z, p2.x,p2.y,p2.z);
+      uvsArr.push(i/SEGS,tA, (i+1)/SEGS,tA, i/SEGS,tB);
+      positions.push(p1.x,p1.y,p1.z, p3.x,p3.y,p3.z, p2.x,p2.y,p2.z);
+      uvsArr.push((i+1)/SEGS,tA, (i+1)/SEGS,tB, i/SEGS,tB);
+    }
+  }
+  // Cap heel + toe
+  for(const [ring,tVal,rev] of [[rings[0],0,true],[rings[rings.length-1],1,false]]){
+    const cz = ring[0].z;
+    const cy = -0.005;
+    for(let i=0;i<SEGS;i++){
+      const i1=(i+1)%SEGS;
+      if(rev) positions.push(0,cy,cz, ring[i1].x,ring[i1].y,ring[i1].z, ring[i].x,ring[i].y,ring[i].z);
+      else    positions.push(0,cy,cz, ring[i].x,ring[i].y,ring[i].z, ring[i1].x,ring[i1].y,ring[i1].z);
+      uvsArr.push(0.5,tVal, (i+1)/SEGS,tVal, i/SEGS,tVal);
+    }
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+  geo.setAttribute('uv',       new THREE.Float32BufferAttribute(uvsArr,2));
+  geo.computeVertexNormals();
+
+  // ── Skin texture ──────────────────────────────
+  const tc2 = document.createElement('canvas');
+  tc2.width=512; tc2.height=512;
+  const tc = tc2.getContext('2d');
+
+  const grad = tc.createLinearGradient(0,0,512,512);
+  grad.addColorStop(0,   '#d9956e');
+  grad.addColorStop(0.35,'#c97c52');
+  grad.addColorStop(0.65,'#bf7048');
+  grad.addColorStop(1,   '#a85c38');
+  tc.fillStyle=grad; tc.fillRect(0,0,512,512);
+
+  // Skin micro-variation
+  for(let i=0;i<1200;i++){
+    const x=Math.random()*512, y=Math.random()*512, r=Math.random()*14+3;
+    tc.fillStyle=`rgba(${Math.random()>0.5?255:120},${Math.random()>0.6?80:40},${20},${0.01+Math.random()*0.022})`;
+    tc.beginPath(); tc.ellipse(x,y,r,r*0.65,Math.random()*Math.PI,0,Math.PI*2); tc.fill();
+  }
+  // Vein hints
+  tc.strokeStyle='rgba(120,60,140,0.06)'; tc.lineWidth=1.5;
+  for(let v=0;v<5;v++){
+    tc.beginPath(); tc.moveTo(Math.random()*100+100, Math.random()*100);
+    tc.bezierCurveTo(Math.random()*200+50,Math.random()*200, Math.random()*200+100,Math.random()*300, Math.random()*100+150,512);
+    tc.stroke();
+  }
+  // Toenails
+  const nailW=[22,18,15,12,10], nailH=[13,11,9,8,7];
+  for(let tn=0;tn<5;tn++){
+    const nx=45+tn*88, ny=28;
+    tc.fillStyle='rgba(245,215,195,0.55)';
+    tc.beginPath(); tc.ellipse(nx,ny,nailW[tn],nailH[tn],0,0,Math.PI*2); tc.fill();
+    tc.strokeStyle='rgba(160,110,80,0.18)'; tc.lineWidth=1; tc.stroke();
+  }
+
+  const texture = new THREE.CanvasTexture(tc2);
+  const mat = new THREE.MeshStandardMaterial({ map:texture, roughness:0.70, metalness:0.0 });
+  return new THREE.Mesh(geo, mat);
+}
+
+// Build normalized width profile [0..1] from top-view frame measurements
+function buildTopProfile(frames) {
+  if (!frames || frames.length < 3) return [];
+  const BINS = 40;
+  const allRows = Array.from({length:BINS}, ()=>[]);
+
+  for(const fc of frames){
+    const ctx = fc.getContext('2d');
+    const w=fc.width, h=fc.height;
+    const data=ctx.getImageData(0,0,w,h).data;
+    const margin=Math.floor(Math.min(w,h)*0.08);
+
+    // Find foot bounding box first
+    let fMinY=h,fMaxY=0;
+    for(let y=margin;y<h-margin;y++) for(let x=margin;x<w-margin;x++){
+      const i=(y*w+x)*4;
+      if((data[i]+data[i+1]+data[i+2])/3 < 120){
+        if(y<fMinY)fMinY=y; if(y>fMaxY)fMaxY=y;
+      }
+    }
+    const footH=fMaxY-fMinY;
+    if(footH<20) continue;
+
+    for(let bin=0;bin<BINS;bin++){
+      const yStart=Math.floor(fMinY+footH*(bin/BINS));
+      const yEnd  =Math.floor(fMinY+footH*((bin+1)/BINS));
+      let rowMin=w,rowMax=0;
+      for(let y=yStart;y<yEnd;y++) for(let x=margin;x<w-margin;x++){
+        const i=(y*w+x)*4;
+        if((data[i]+data[i+1]+data[i+2])/3 < 120){
+          if(x<rowMin)rowMin=x; if(x>rowMax)rowMax=x;
+        }
+      }
+      if(rowMax>rowMin) allRows[bin].push(rowMax-rowMin);
+    }
+  }
+
+  // Median per bin, then normalize to 0..1
+  const profile = allRows.map(b=>{
+    if(!b.length) return 0;
+    const s=[...b].sort((a,c)=>a-c);
+    return s[Math.floor(s.length/2)];
+  });
+  const maxP = Math.max(...profile, 1);
+  return profile.map(v=>v/maxP);
+}
+
+function isApproxSkin(r,g,b){
+  const bright=(r+g+b)/3;
+  return r>80&&g>40&&b>20&&r>g&&r>b&&bright>60&&bright<230;
+}
+
+// ─── Orbit Controls ───────────────────────────────
+function attachOrbitControls(canvas) {
+  // Touch
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (e.touches.length===1) {
+      f3d.isDragging=true;
+      f3d.lastX=e.touches[0].clientX;
+      f3d.lastY=e.touches[0].clientY;
+    } else if (e.touches.length===2) {
+      f3d.pinchDist=pinchDistance(e.touches);
+    }
+  },{passive:false});
+
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length===1 && f3d.isDragging) {
+      const dx=e.touches[0].clientX-f3d.lastX;
+      const dy=e.touches[0].clientY-f3d.lastY;
+      f3d.targetRotY += dx*0.012;
+      f3d.targetRotX += dy*0.010;
+      f3d.targetRotX  = Math.max(-0.5, Math.min(1.3, f3d.targetRotX));
+      f3d.lastX=e.touches[0].clientX;
+      f3d.lastY=e.touches[0].clientY;
+    } else if (e.touches.length===2) {
+      const d=pinchDistance(e.touches);
+      const delta=d/f3d.pinchDist;
+      f3d.targetZoom = Math.max(0.5, Math.min(2.4, f3d.targetZoom*delta));
+      f3d.pinchDist=d;
+    }
+  },{passive:false});
+
+  canvas.addEventListener('touchend', ()=>{ f3d.isDragging=false; });
+
+  // Mouse
+  canvas.addEventListener('mousedown', e=>{ f3d.isDragging=true; f3d.lastX=e.clientX; f3d.lastY=e.clientY; });
+  canvas.addEventListener('mousemove', e=>{
+    if(!f3d.isDragging)return;
+    const dx=e.clientX-f3d.lastX, dy=e.clientY-f3d.lastY;
+    f3d.targetRotY+=dx*0.009; f3d.targetRotX+=dy*0.008;
+    f3d.targetRotX=Math.max(-0.5,Math.min(1.3,f3d.targetRotX));
+    f3d.lastX=e.clientX; f3d.lastY=e.clientY;
+  });
+  canvas.addEventListener('mouseup',   ()=>{ f3d.isDragging=false; });
+  canvas.addEventListener('mouseleave',()=>{ f3d.isDragging=false; });
+  canvas.addEventListener('wheel', e=>{
+    e.preventDefault();
+    f3d.targetZoom=Math.max(0.5,Math.min(2.4,f3d.targetZoom*(1-e.deltaY*0.001)));
+  },{passive:false});
+}
+
+function pinchDistance(touches){
+  const dx=touches[0].clientX-touches[1].clientX;
+  const dy=touches[0].clientY-touches[1].clientY;
+  return Math.sqrt(dx*dx+dy*dy);
+}
+
+function animateFoot3D() {
+  if (!f3d.renderer) return;
+  f3d.animId = requestAnimationFrame(animateFoot3D);
+
+  // Smooth lerp
+  const lp=0.09;
+  f3d.rotX += (f3d.targetRotX-f3d.rotX)*lp;
+  f3d.rotY += (f3d.targetRotY-f3d.rotY)*lp;
+  f3d.zoom += (f3d.targetZoom-f3d.zoom)*lp;
+
+  // Apply rotation to foot group
+  if (f3d.foot) {
+    f3d.foot.rotation.x = f3d.rotX;
+    f3d.foot.rotation.y = f3d.rotY;
+  }
+
+  // Zoom via camera distance
+  const baseDist=0.52;
+  f3d.camera.position.set(0, 0.18/f3d.zoom, baseDist/f3d.zoom);
+  f3d.camera.lookAt(0,0,0);
+
+  f3d.renderer.render(f3d.scene, f3d.camera);
+}
+
+function setFootView(preset) {
+  const views={
+    top:   {rx:1.28, ry:0},
+    side:  {rx:0.05, ry:1.57},
+    front: {rx:0.15, ry:0},
+    iso:   {rx:0.40, ry:0.65},
+  };
+  const v=views[preset];
+  if(v){ f3d.targetRotX=v.rx; f3d.targetRotY=v.ry; f3d.targetZoom=1; }
+}
+
+function resizeFoot3D() {
+  if (!f3d.renderer) return;
+  const canvas=document.getElementById('foot3d-canvas');
+  const W=canvas.clientWidth, H=canvas.clientHeight;
+  f3d.renderer.setSize(W,H,false);
+  f3d.camera.aspect=W/H;
+  f3d.camera.updateProjectionMatrix();
+}
+
+// ═══════════════════════════════════════════════════
+//  NAV & UTILS
+// ═══════════════════════════════════════════════════
+function go(from,to){
+  const f=document.getElementById(from),t=document.getElementById(to);
+  if(!f||!t)return;
+  f.classList.add('out');
+  setTimeout(()=>{f.classList.remove('on','out');t.classList.add('on');t.scrollTop=0;},280);
+}
+function restart(){
+  stopAllScans();
+  if(f3d.animId){ cancelAnimationFrame(f3d.animId); f3d.animId=null; }
+  if(f3d.renderer){ f3d.renderer.dispose(); }
+  f3d={}; foot3dInit=false;
+  scanData=null;ans={};quizStep=0;
+  go('s-res','s-land');
+}
+function showOv(t){document.getElementById('ov-msg').textContent=t;document.getElementById('ov').classList.add('on');}
+function hideOv(){document.getElementById('ov').classList.remove('on');}
+let _tt;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('on'),2200);}
+
+loadCSV();
+</script>
+</body>
+</html>
